@@ -6,6 +6,8 @@ class Player(CircleShape):
         super().__init__(x, y, PLAYER_RADIUS)
         self.rotation = 0
         self.timer = 0
+        self.lives = PLAYER_LIVES
+        self.save_timer = PLAYER_SAVE_TIMER
         
     # in the player class
     def triangle(self):
@@ -35,6 +37,8 @@ class Player(CircleShape):
     def update(self, dt):
         if(self.timer > 0):
             self.timer -= dt
+        if(self.save_timer > 0):
+            self.save_timer -= dt
             
         keys = pygame.key.get_pressed()
 

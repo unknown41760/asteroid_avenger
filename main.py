@@ -7,8 +7,11 @@ from asteroidfield import *
 
 def main():
     pygame.init()
+    pygame.font.init()
     clock = pygame.time.Clock()
     dt = 0
+    score = 0
+
     print("Starting Asteroids!")
     print(f"Screen width: {SCREEN_WIDTH}")
     print(f"Screen height: {SCREEN_HEIGHT}")
@@ -27,6 +30,8 @@ def main():
     hero = Player(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
     calipso = AsteroidField()
 
+    font = pygame.font.Font(None, 36)
+
     while(True):
         
         for event in pygame.event.get():
@@ -35,18 +40,30 @@ def main():
         
         pygame.Surface.fill(screen, (0,0,0))
         updatable.update(dt)
-
+        
         for a in asteroids_group:
-            if (hero.collision_check(a)):
-                print("Game over!")
-                return 0
+            if(hero.save_timer <= 0):
+                if (hero.collision_check(a)):
+                    hero.lives -= 1
+                    score -= SCORE_PENALTY
+                    hero.position.x = SCREEN_WIDTH/2
+                    hero.position.y = SCREEN_HEIGHT/2
+                    hero.save_timer = PLAYER_SAVE_TIMER
+
+                    if(hero.lives <= 0):
+                        print("Game over!")
+                        return 0
+        
             for s in shot_group:
                 if(s.collision_check(a)):
+                    score += SCORE_INCREMENT
                     a.split()
                     s.kill()
 
         for d in drawable:
             d.draw(screen)
+        score_text = font.render(f"Score: {score} Lives: {hero.lives}", True, COLOR_WHITE)
+        screen.blit(score_text, (10,10))
         pygame.display.flip()
         dt = clock.tick(60) / 1000
 
